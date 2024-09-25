@@ -8,7 +8,7 @@ class TritonDeps(ConanFile):
     def requirements(self):
         self.requires("capstone/5.0.1")
         self.requires("bitwuzla/0.4.0")
-
+        self.requires("z3/4.13.0")
         self.requires("boost/1.81.0")
 
     def configure(self):

@@ -70,7 +70,7 @@ class CMakeBuild(build_ext):
         #   BITWUZLA_INTERFACE=Off
         #   BOOST_INTERFACE=Off
         #
-        for arg, value in [('Z3_INTERFACE', 'Off'), ('LLVM_INTERFACE', 'Off'), ('BITWUZLA_INTERFACE', 'On'), ('BOOST_INTERFACE', 'On')]:
+        for arg, value in [('Z3_INTERFACE', 'On'), ('LLVM_INTERFACE', 'Off'), ('BITWUZLA_INTERFACE', 'On'), ('BOOST_INTERFACE', 'On')]:
             if os.getenv(arg):
                 cmake_args += [f'-D{arg}=' + os.getenv(arg)]
             else:
@@ -180,7 +180,7 @@ class CMakeBuild(build_ext):
         copy_file(src_filename, dst_filename, verbose=self.verbose, dry_run=self.dry_run)
 
     def copy_autocomplete(self):
-        src_filename = os.path.join(self.build_temp + '/doc/triton_autocomplete', 'triton.pyi')
+        src_filename = os.path.join('build/Release/doc/triton_autocomplete', 'triton.pyi')
         if(os.path.exists(src_filename)):
             copy_file(src_filename, self.build_lib, verbose=self.verbose, dry_run=self.dry_run)
 
