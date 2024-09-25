@@ -70,7 +70,7 @@ class CMakeBuild(build_ext):
         #   BITWUZLA_INTERFACE=Off
         #   BOOST_INTERFACE=Off
         #
-        for arg, value in [('Z3_INTERFACE', 'On'), ('LLVM_INTERFACE', 'Off'), ('BITWUZLA_INTERFACE', 'Off'), ('BOOST_INTERFACE', 'Off')]:
+        for arg, value in [('Z3_INTERFACE', 'Off'), ('LLVM_INTERFACE', 'Off'), ('BITWUZLA_INTERFACE', 'On'), ('BOOST_INTERFACE', 'On')]:
             if os.getenv(arg):
                 cmake_args += [f'-D{arg}=' + os.getenv(arg)]
             else:
@@ -154,25 +154,25 @@ class CMakeBuild(build_ext):
         if not os.path.exists(self.build_lib):
             os.makedirs(self.build_lib)
 
-        subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
-        subprocess.check_call(['cmake', '--build', '.', '--config', 'Release', '--target', 'python-triton'] + build_args, cwd=self.build_temp)
+        subprocess.check_call(['cmake', '--preset', 'conan-release', ext.sourcedir] + cmake_args, env=env)
+        subprocess.check_call(['cmake', '--build', '.', '--preset','conan-release', '--target', 'python-triton'] + build_args)
 
         # The autocomplete file has to be built separately.
         if (is_cmake_true(python_autocomplete_value)):
-            subprocess.check_call(['cmake', '--build', '.', '--config', 'Release', '--target', 'python_autocomplete'], cwd=self.build_temp)
+            subprocess.check_call(['cmake', '--build', '.','--preset','conan-release', '--target', 'python_autocomplete'])
 
     def copy_extension_to_source(self, ext):
         fullname = self.get_ext_fullname(ext.name)
         filename = self.get_ext_filename(fullname)
 
         if platform.system() == "Linux":
-            src_filename = os.path.join(self.build_temp + '/src/libtriton', 'triton.so')
+            src_filename = os.path.join('build/Release/src/libtriton', 'triton.so')
             dst_filename = os.path.join(self.build_lib, os.path.basename(filename))
         elif platform.system() == "Darwin":
-            src_filename = os.path.join(self.build_temp + '/src/libtriton', 'libtriton.dylib')
+            src_filename = os.path.join('build/Release/src/libtriton' + '/src/libtriton', 'libtriton.dylib')
             dst_filename = os.path.join(self.build_lib, os.path.basename(filename))
         elif platform.system() == "Windows":
-            src_filename = os.path.join(self.build_temp + '\\src\\libtriton\\Release', 'triton.pyd')
+            src_filename = os.path.join('build/Release/src/libtriton' + '\\src\\libtriton\\Release', 'triton.pyd')
             dst_filename = os.path.join(self.build_lib, os.path.basename(filename))
         else:
             raise Exception(f'Platform not supported: {platform.system()}')
